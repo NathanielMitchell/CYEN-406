@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-var message = "Team Name: Crypto Bros, Team Leader: Vito Mumphrey"
+var message = "Team Name: RSA Is Gay, Team Leader: Vito Mumphrey, Team Members: Nathaniel Mitchell, Stone Gorman, Mason Sanchez, Jordan Williams, Vito Mumphrey"
 
 func checkErr(err error) {
 	if err != nil {
