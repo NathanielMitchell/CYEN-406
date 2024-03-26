@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-var message = "Team Name: RSA Is Gay, Team Leader: Vito Mumphrey, Team Members: Nathaniel Mitchell, Stone Gorman, Mason Sanchez, Jordan Williams, Vito Mumphrey"
+var message = "Team Name: Man IDK, Team Leader: Vito Mumphrey, Team Members: Nathaniel Mitchell, Stone Gorman, Mason Sanchez, Jordan Williams, Vito Mumphrey"
 
 func checkErr(err error) {
 	if err != nil {
@@ -20,6 +20,7 @@ func checkErr(err error) {
 
 // Takes an argument of string for the public key filename
 // encrypts the message
+// prints to stdout and file named 'secret'
 func encrypt(filename string) {
 
 	msg := []byte(message)
