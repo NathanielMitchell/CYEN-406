@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-var message = "Team Name: RSA Is Gay, Team Leader: Vito Mumphrey, Team Members: Nathaniel Mitchell, Stone Gorman, Mason Sanchez, Jordan Williams, Vito Mumphrey"
+var message = "Team Name: RSA is Gray, Team Leader: Vito Mumphrey, Team Members: Nathaniel Mitchell, Stone Gorman, Mason Sanchez, Jordan Williams, Vito Mumphrey"
 
 func checkErr(err error) {
 	if err != nil {
@@ -40,6 +40,7 @@ func encrypt(filename string) {
 	enc_message, err := rsa.EncryptPKCS1v15(random, cert.(*rsa.PublicKey), msg)
 	checkErr(err)
 
+    fmt.Println("Writing to ./secret...")
 	os.WriteFile("secret", enc_message, 0666)
 
     fmt.Println("Encrypted Message...")
