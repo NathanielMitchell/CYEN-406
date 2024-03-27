@@ -5,12 +5,10 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
-    "fmt"
+	"fmt"
 	"log"
 	"os"
 )
-
-var message = "Team Name: Man IDK, Team Leader: Vito Mumphrey, Team Members: Nathaniel Mitchell, Stone Gorman, Mason Sanchez, Jordan Williams, Vito Mumphrey"
 
 func checkErr(err error) {
 	if err != nil {
@@ -21,12 +19,14 @@ func checkErr(err error) {
 // Takes an argument of string for the public key filename
 // encrypts the message
 // prints to stdout and file named 'secret'
-func encrypt(filename string) {
+func encrypt(filename string, msg_filename string) {
 
-	msg := []byte(message)
+    msg, err := os.ReadFile(msg_filename)
+    checkErr(err)
+
 	random := rand.Reader
 
-	pemData, err := os.ReadFile("public.pem")
+	pemData, err := os.ReadFile(filename)
 	checkErr(err)
 
 	block, _ := pem.Decode(pemData)
@@ -41,25 +41,24 @@ func encrypt(filename string) {
 	enc_message, err := rsa.EncryptPKCS1v15(random, cert.(*rsa.PublicKey), msg)
 	checkErr(err)
 
-    fmt.Println("Writing to ./secret...")
+	fmt.Println("Writing to ./secret...")
 	os.WriteFile("secret", enc_message, 0666)
 
-    fmt.Println("Encrypted Message...")
-    fmt.Println(enc_message)
+	fmt.Println("Encrypted Message...")
+	fmt.Println(enc_message)
 
-    return
 }
 
 // Takes in the private keys filename
 // decrypts the secret message which is in "secret"
-func decrypt(filname string) {
+func decrypt(filname string, secret_msg_filname string) {
 
-    secret_msg, err := os.ReadFile("secret")
+    secret_msg, err := os.ReadFile(secret_msg_filname)
     checkErr(err)
 
 	random := rand.Reader
-    
-    pemData, err := os.ReadFile("private.pem")
+
+	pemData, err := os.ReadFile(filname)
 	checkErr(err)
 
 	block, _ := pem.Decode(pemData)
@@ -70,34 +69,31 @@ func decrypt(filname string) {
 	cert, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	checkErr(err)
 
-    dec_message, err := rsa.DecryptPKCS1v15(random, cert.(*rsa.PrivateKey), secret_msg)
-    checkErr(err)
+	dec_message, err := rsa.DecryptPKCS1v15(random, cert.(*rsa.PrivateKey), secret_msg)
+	checkErr(err)
 
-    fmt.Println("Decrypted Message...")
-    fmt.Println(string(dec_message))
+	fmt.Println("Decrypted Message...")
+	fmt.Println(string(dec_message))
 
-    return
 }
 
-func main () {
-    args := os.Args
-    
-    if len(args) != 3 {
-        fmt.Println("./main mode keyfilename")
-        return
-    }
+func main() {
+	args := os.Args
 
-    mode := args[1]
+	if len(args) != 3 {
+		fmt.Println("./main mode[encrypt|decrypt] './keyfilename' './msg_file,txt'")
+		return
+	}
 
-    switch mode {
-    case "encrypt":
-        encrypt(args[2]) 
-    case "decrypt":
-        decrypt(args[2])
-    default:
-        fmt.Println("./main mode keyfilename")
-        return
-    }
+	mode := args[1]
 
-    return
+	switch mode {
+	case "encrypt":
+		encrypt(args[2], args[3])
+	case "decrypt":
+		decrypt(args[2], args[3])
+	default:
+		fmt.Println("./main mode[encrypt|decrypt] './keyfilename' './msg_file,txt'")
+	}
+
 }
