@@ -80,7 +80,7 @@ func decrypt(filname string, secret_msg_filname string) {
 func main() {
 	args := os.Args
 
-	if len(args) != 3 {
+	if len(args) != 4 {
 		fmt.Println("./main mode[encrypt|decrypt] './keyfilename' './msg_file,txt'")
 		return
 	}
