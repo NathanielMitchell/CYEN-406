@@ -14,7 +14,7 @@
 # -decrypt each value from the input using the private key to generate a valid ASCII character
 # -rebuild the original message
 from sys import stdin, stdout, stderr
-from math import sqrt
+from math import sqrt, floor
 
 MIN_PRIME = 100
 MAX_PRIME = 999
@@ -36,7 +36,7 @@ def isPrime(n):
 def factor(n):
     a = 0
     b = 0
-    for i in range (1, sqrt(n)):
+    for i in range (1, floor(sqrt(n))):
          if (n % i == 0 and isPrime(i)):
               a = i
     b = n / a
