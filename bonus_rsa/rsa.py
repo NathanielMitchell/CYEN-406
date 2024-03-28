@@ -53,10 +53,14 @@ def gcd(a, b):
 
 # naively calculates the inverse modulo of e and z
 def naiveInverse(e, z):
+     for i in range(1, z):
+          if (((i*e) % z) == 1):
+               return i
+        
 
 
 # decrypts a ciphertext C with a private key K_priv to get M
-def decrypt(C, K_priv):
+#def decrypt(C, K_priv):
 
 
 # MAIN
@@ -78,7 +82,7 @@ stderr.write("p={}, q={}\n".format(p, q))
 stderr.write("n={}\n".format(n))
 
 # calculate z
-z = # in instructions at the top
+z = int(((p - 1) * (q - 1)) / gcd(p - 1, q - 1))
 stderr.write("z={}\n".format(z))
 stderr.write("e={}\n".format(e))
 
@@ -87,19 +91,19 @@ d = naiveInverse(e, z)
 stderr.write("d={}\n".format(d))
 
 # generate the private key
-K_priv = (d, n)
-stderr.write("Private Key={}\n".format(K_priv))
-stderr.flush()
+# K_priv = (d, n)
+# stderr.write("Private Key={}\n".format(K_priv))
+# stderr.flush()
 
-# implement RSA for the specified input Cs
-M = ""
-for c in C:
-	m = decrypt(int(c), K_priv)
-	try:
-		M += chr(m)
-		stdout.write(chr(m))
-		stdout.flush()
-	except:
-		stderr.write("\nERROR: invalid plaintext.\n")
-		break
-print()
+# # implement RSA for the specified input Cs
+# M = ""
+# for c in C:
+# 	m = decrypt(int(c), K_priv)
+# 	try:
+# 		M += chr(m)
+# 		stdout.write(chr(m))
+# 		stdout.flush()
+# 	except:
+# 		stderr.write("\nERROR: invalid plaintext.\n")
+# 		break
+# print()
