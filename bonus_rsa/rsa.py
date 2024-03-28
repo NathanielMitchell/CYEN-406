@@ -37,7 +37,10 @@ def factor(n):
 
 # recursively returns the greatest common divisor of a and b
 def gcd(a, b):
-
+    if b != 0:
+        return gcd(b, a % b)
+    else:
+        return a
 
 # naively calculates the inverse modulo of e and z
 def naiveInverse(e, z):
