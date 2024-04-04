@@ -39,7 +39,7 @@ def factor(n):
     for i in range (2, int((n**0.5)//1)):
          if (n % i == 0 and isPrime(i)):
               a = i
-    b = n / a
+    b = int(n / a)
     
     return (a, b)
 
@@ -60,7 +60,9 @@ def naiveInverse(e, z):
 
 
 # decrypts a ciphertext C with a private key K_priv to get M
-#def decrypt(C, K_priv):
+def decrypt(C, K_priv):
+    msg = ((C ** K_priv[0]) % K_priv[1])
+    return msg
 
 
 # MAIN
@@ -91,19 +93,19 @@ d = naiveInverse(e, z)
 stderr.write("d={}\n".format(d))
 
 # generate the private key
-# K_priv = (d, n)
-# stderr.write("Private Key={}\n".format(K_priv))
-# stderr.flush()
+K_priv = (d, n)
+stderr.write("Private Key={}\n".format(K_priv))
+stderr.flush()
 
-# # implement RSA for the specified input Cs
-# M = ""
-# for c in C:
-# 	m = decrypt(int(c), K_priv)
-# 	try:
-# 		M += chr(m)
-# 		stdout.write(chr(m))
-# 		stdout.flush()
-# 	except:
-# 		stderr.write("\nERROR: invalid plaintext.\n")
-# 		break
-# print()
+# implement RSA for the specified input Cs
+M = ""
+for c in C:
+	m = decrypt(int(c), K_priv)
+	try:
+		M += chr(m)
+		stdout.write(chr(m))
+		stdout.flush()
+	except:
+		stderr.write("\nERROR: invalid plaintext.\n")
+		break
+print()
