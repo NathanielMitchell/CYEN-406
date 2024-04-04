@@ -11,10 +11,6 @@ import (
 	"os"
 )
 
-func checkErr(err error) {
-	log.Fatal(err)
-}
-
 func main() {
 
 	args := os.Args
@@ -24,23 +20,34 @@ func main() {
 		return
 	}
 
-	// build the key with sha256sum
+	// build the key with sha256 hash
 	sum := sha256.New()
-	key := sum.Sum([]byte(args[1]))
+	sum.Write([]byte(args[1]))
+	key := sum.Sum(nil)
 
 	f, err := os.ReadFile(args[2])
-	checkErr(err)
+	if err != nil {
+		log.Fatalln("error while reading src")
+	}
+
+    if len(f)%aes.BlockSize != 0 {
+        // pad the b out
+	}
 
 	block, err := aes.NewCipher(key)
-	checkErr(err)
+	if err != nil {
+		log.Fatalln("error while building aes key")
+	}
 
-	// encrypt the message
 	enc_message := make([]byte, aes.BlockSize+len(f))
 	iv := enc_message[:aes.BlockSize]
-	io.ReadFull(rand.Reader, iv)
+    if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+        log.Fatalln("error while reading iv")
+    }
 
-	stream := cipher.NewCFBEncrypter(block, iv)
-	stream.XORKeyStream(enc_message[aes.BlockSize:], f)
+	// encrypt the message
+	stream := cipher.NewCBCEncrypter(block, iv)
+	stream.CryptBlocks(enc_message[aes.BlockSize:], f)
 
 	os.WriteFile(args[3], enc_message, 0644)
 
