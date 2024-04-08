@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-func encrypt(cli_key []byte, cli_iv []byte, src string, dest string) {
+func encrypt(cli_key []byte, src string, dest string) {
 
 	// build the key with sha256 hash
 	sum := sha256.New()
@@ -40,7 +40,7 @@ func encrypt(cli_key []byte, cli_iv []byte, src string, dest string) {
 	}
 
 	enc_message := make([]byte, aes.BlockSize+len(f))
-	iv := cli_iv
+	iv := enc_message[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		log.Fatalln("error while reading iv")
 	}
@@ -52,7 +52,7 @@ func encrypt(cli_key []byte, cli_iv []byte, src string, dest string) {
 	os.WriteFile(dest, enc_message, 0644)
 }
 
-func decrypt(cli_key []byte, cli_iv []byte, src string) {
+func decrypt(cli_key []byte, src string) {
 
 	// build the key with sha256 hash
 	sum := sha256.New()
@@ -70,7 +70,7 @@ func decrypt(cli_key []byte, cli_iv []byte, src string) {
 	}
 
 	decrypted_message := f[aes.BlockSize:]
-	iv := cli_iv
+	iv := decrypted_message[:aes.BlockSize]
 
 	// decrypt the message
 	stream := cipher.NewCBCDecrypter(block, iv)
@@ -91,9 +91,9 @@ func main() {
 
 	switch args[1] {
 	case "e":
-		encrypt([]byte(args[2]), []byte(args[3]), args[4], args[5])
+		encrypt([]byte(args[2]), args[3], args[4])
 	case "d":
-		decrypt([]byte(args[2]), []byte(args[3]), args[4])
+		decrypt([]byte(args[2]), args[3])
 	}
 
 }

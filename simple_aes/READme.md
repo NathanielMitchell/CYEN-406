@@ -1,9 +1,4 @@
 # Key
 
+key to use
 > rijndael
-
-need to sha256sum it
-```
-echo -n "rijndael" | sha256sum
-```
-
