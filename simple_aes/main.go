@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
 	"io"
@@ -11,12 +12,20 @@ import (
 	"os"
 )
 
-func encrypt(cli_key []byte, src string, dest string) {
+func encrypt(cli_key []byte, iv []byte, src string, dest string) {
 
 	// build the key with sha256 hash
 	sum := sha256.New()
 	sum.Write(cli_key)
 	key := sum.Sum(nil)
+
+	// build the iv with sha1 hash
+	ivhash := sha1.New()
+	ivhash.Write(iv)
+	iv_arr := ivhash.Sum(nil)
+
+	// make it fit
+	iv_var := iv_arr[:aes.BlockSize]
 
 	f, err := os.ReadFile(src)
 	if err != nil {
@@ -40,24 +49,31 @@ func encrypt(cli_key []byte, src string, dest string) {
 	}
 
 	enc_message := make([]byte, aes.BlockSize+len(f))
-	iv := enc_message[:aes.BlockSize]
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+	if _, err := io.ReadFull(rand.Reader, iv_var); err != nil {
 		log.Fatalln("error while reading iv")
 	}
 
 	// encrypt the message
-	stream := cipher.NewCBCEncrypter(block, iv)
+	stream := cipher.NewCBCEncrypter(block, iv_var)
 	stream.CryptBlocks(enc_message[aes.BlockSize:], f)
 
 	os.WriteFile(dest, enc_message, 0644)
 }
 
-func decrypt(cli_key []byte, src string) {
+func decrypt(cli_key []byte, iv []byte, src string) {
 
 	// build the key with sha256 hash
 	sum := sha256.New()
 	sum.Write(cli_key)
 	key := sum.Sum(nil)
+
+	// build the iv with sha1 hash
+	ivhash := sha1.New()
+	ivhash.Write(iv)
+	iv_arr := ivhash.Sum(nil)
+
+	// make it fit
+	iv_var := iv_arr[:aes.BlockSize]
 
 	f, err := os.ReadFile(src)
 	if err != nil {
@@ -70,10 +86,9 @@ func decrypt(cli_key []byte, src string) {
 	}
 
 	decrypted_message := f[aes.BlockSize:]
-	iv := decrypted_message[:aes.BlockSize]
 
 	// decrypt the message
-	stream := cipher.NewCBCDecrypter(block, iv)
+	stream := cipher.NewCBCDecrypter(block, iv_var)
 	stream.CryptBlocks(decrypted_message, decrypted_message)
 
 	fmt.Println("Encrypted Message...")
@@ -84,17 +99,16 @@ func main() {
 
 	args := os.Args
 
-    fmt.Println(args)
-	if len(args) < 2 || len(args) > 4 {
-		fmt.Println("./simple_aes mode[e:d] ke|'' src|'' dest|''")
+	if len(args) < 2 || len(args) > 6 {
+		fmt.Println("./simple_aes mode[encrypt:decrypt] key|'' iv|'' src|'' dest|''")
 		return
 	}
 
 	switch args[1] {
 	case "e":
-		encrypt([]byte(args[2]), args[3], args[4])
+		encrypt([]byte(args[2]), []byte(args[3]), args[4], args[5])
 	case "d":
-		decrypt([]byte(args[2]), args[3])
+		decrypt([]byte(args[2]), []byte(args[3]), args[4])
 	}
 
 }
