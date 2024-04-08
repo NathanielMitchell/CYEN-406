@@ -77,15 +77,16 @@ func decrypt(cli_key []byte, src string) {
 	stream.CryptBlocks(decrypted_message, decrypted_message)
 
 	fmt.Println("Encrypted Message...")
-	fmt.Println(decrypted_message)
+	fmt.Println(string(decrypted_message))
 }
 
 func main() {
 
 	args := os.Args
 
-	if len(args) != 4 {
-		fmt.Println("./simple_aes mode[e:d] ke|'' iv|'' src|'' dest|''")
+    fmt.Println(args)
+	if len(args) < 2 || len(args) > 4 {
+		fmt.Println("./simple_aes mode[e:d] ke|'' src|'' dest|''")
 		return
 	}
 
