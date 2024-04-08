@@ -11,21 +11,14 @@ import (
 	"os"
 )
 
-func main() {
-
-	args := os.Args
-
-	if len(args) != 4 {
-		fmt.Println("./simple_aes key src dest")
-		return
-	}
+func encrypt(cli_key []byte, cli_iv []byte, src string, dest string) {
 
 	// build the key with sha256 hash
 	sum := sha256.New()
-	sum.Write([]byte(args[1]))
+	sum.Write(cli_key)
 	key := sum.Sum(nil)
 
-	f, err := os.ReadFile(args[2])
+	f, err := os.ReadFile(src)
 	if err != nil {
 		log.Fatalln("error while reading src")
 	}
@@ -35,7 +28,8 @@ func main() {
 		missingBytes := len(f) % aes.BlockSize
 		totalPad := aes.BlockSize - missingBytes
 		for i := 0; i < totalPad; i++ {
-			// the code I found that described how to do this wanted the actual pad value to be the same as 'totalPad'
+			// the code that described how to do this
+			// wanted the actual pad value to be the same as 'totalPad'
 			f = append(f, byte(0x00))
 		}
 	}
@@ -46,7 +40,7 @@ func main() {
 	}
 
 	enc_message := make([]byte, aes.BlockSize+len(f))
-	iv := enc_message[:aes.BlockSize]
+	iv := cli_iv
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		log.Fatalln("error while reading iv")
 	}
@@ -55,6 +49,51 @@ func main() {
 	stream := cipher.NewCBCEncrypter(block, iv)
 	stream.CryptBlocks(enc_message[aes.BlockSize:], f)
 
-	os.WriteFile(args[3], enc_message, 0644)
+	os.WriteFile(dest, enc_message, 0644)
+}
+
+func decrypt(cli_key []byte, cli_iv []byte, src string) {
+
+	// build the key with sha256 hash
+	sum := sha256.New()
+	sum.Write(cli_key)
+	key := sum.Sum(nil)
+
+	f, err := os.ReadFile(src)
+	if err != nil {
+		log.Fatalln("error while reading src")
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		log.Fatalln("error while building aes key")
+	}
+
+	decrypted_message := f[aes.BlockSize:]
+	iv := cli_iv
+
+	// decrypt the message
+	stream := cipher.NewCBCDecrypter(block, iv)
+	stream.CryptBlocks(decrypted_message, decrypted_message)
+
+	fmt.Println("Encrypted Message...")
+	fmt.Println(decrypted_message)
+}
+
+func main() {
+
+	args := os.Args
+
+	if len(args) != 4 {
+		fmt.Println("./simple_aes mode[e:d] ke|'' iv|'' src|'' dest|''")
+		return
+	}
+
+	switch args[1] {
+	case "e":
+		encrypt([]byte(args[2]), []byte(args[3]), args[4], args[5])
+	case "d":
+		decrypt([]byte(args[2]), []byte(args[3]), args[4])
+	}
 
 }
