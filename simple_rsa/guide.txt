@@ -1,0 +1,5 @@
+sudo openssl -encrypt -pubin -inkey public-8.pem -in message.txt -out encrypted.txt
+
+# Decrypt data using the recipient's private key
+openssl pkeyutl -decrypt -inkey recipient_private.pem -in encrypted.txt -out decrypted.txt
+Q
