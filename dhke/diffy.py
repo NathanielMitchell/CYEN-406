@@ -38,11 +38,10 @@ publicKeyFile.close()
 inputPublicKey = input("Please provide public key path: ")
 
 publicKeyFile = open(inputPublicKey, "r")
-
 altKey = publicKeyFile.read()
 publicKeyFile.close()
 
-K = pow(Y, int(altKey, 16), mod=P)
+K = pow(int(altKey, 16), X, mod=P)
 
 outputSymetricKey = sha256(str(K).encode("ascii")).hexdigest()
 
