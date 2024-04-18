@@ -29,7 +29,9 @@ Y = pow(g, X, mod=P)
 
 YAsHex = hex(Y)
 
-publicKeyFile = open("publicKey.txt", "w")
+outputFileName = input("Please enter a file name: ")
+
+publicKeyFile = open(outputFileName, "w")
 publicKeyFile.write(YAsHex)
 publicKeyFile.close()
 
