@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-func encrypt(cli_key []byte, iv []byte, src string, dest string) {
+func encrypt(cli_key []byte, iv []byte, src []byte) {
 
 	// build the key with sha256 hash
 	sum := sha256.New()
@@ -24,19 +24,14 @@ func encrypt(cli_key []byte, iv []byte, src string, dest string) {
 	ivhash.Write(iv)
 	iv_arr := ivhash.Sum(nil)
 
-	f, err := os.ReadFile(src)
-	if err != nil {
-		log.Fatalln("error while reading src")
-	}
-
 	// pad the end of a block
-	if len(f)%aes.BlockSize != 0 {
-		missingBytes := len(f) % aes.BlockSize
+	if len(src)%aes.BlockSize != 0 {
+		missingBytes := len(src) % aes.BlockSize
 		totalPad := aes.BlockSize - missingBytes
 		for i := 0; i < totalPad; i++ {
 			// the code that described how to do this
 			// wanted the actual pad value to be the same as 'totalPad'
-			f = append(f, byte(0x00))
+			src = append(src, byte(0x00))
 		}
 	}
 
@@ -45,19 +40,19 @@ func encrypt(cli_key []byte, iv []byte, src string, dest string) {
 		log.Fatalln("error while building aes key")
 	}
 
-	enc_message := make([]byte, aes.BlockSize+len(f))
+	enc_message := make([]byte, aes.BlockSize+len(src))
 	if _, err := io.ReadFull(rand.Reader, iv_arr); err != nil {
 		log.Fatalln("error while reading iv")
 	}
 
 	// encrypt the message
 	stream := cipher.NewCBCEncrypter(block, iv_arr)
-	stream.CryptBlocks(enc_message[aes.BlockSize:], f)
+	stream.CryptBlocks(enc_message[aes.BlockSize:], src)
 
 	fmt.Println("%x00", enc_message)
 }
 
-func decrypt(cli_key []byte, iv []byte, src string) {
+func decrypt(cli_key []byte, iv []byte, src []byte) {
 
 	// build the key with sha256 hash
 	sum := sha256.New()
@@ -69,17 +64,12 @@ func decrypt(cli_key []byte, iv []byte, src string) {
 	ivhash.Write(iv)
 	iv_arr := ivhash.Sum(nil)
 
-	f, err := os.ReadFile(src)
-	if err != nil {
-		log.Fatalln("error while reading src")
-	}
-
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		log.Fatalln("error while building aes key")
 	}
 
-	decrypted_message := f[aes.BlockSize:]
+	decrypted_message := src[aes.BlockSize:]
 
 	// decrypt the message
 	stream := cipher.NewCBCDecrypter(block, iv_arr)
@@ -94,15 +84,15 @@ func main() {
 	args := os.Args
 
 	if len(args) < 2 || len(args) > 6 {
-		fmt.Println("./simple_aes mode[encrypt:decrypt] key|'' iv|'' src|'' dest|''")
+		fmt.Println("./simple_aes mode[encrypt:decrypt] key|'' iv|''")
 		return
 	}
 
 	switch args[1] {
 	case "e":
-		encrypt([]byte(args[2]), []byte(args[3]), args[4], args[5])
+		encrypt([]byte(args[2]), []byte(args[3]), []byte(args[4]))
 	case "d":
-		decrypt([]byte(args[2]), []byte(args[3]), args[4])
+		decrypt([]byte(args[2]), []byte(args[3]), []byte(args[4]))
 	}
 
 }
