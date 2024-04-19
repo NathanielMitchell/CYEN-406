@@ -24,9 +24,6 @@ func encrypt(cli_key []byte, iv []byte, src string, dest string) {
 	ivhash.Write(iv)
 	iv_arr := ivhash.Sum(nil)
 
-	// make it fit
-	iv_var := iv_arr[:aes.BlockSize]
-
 	f, err := os.ReadFile(src)
 	if err != nil {
 		log.Fatalln("error while reading src")
@@ -49,12 +46,12 @@ func encrypt(cli_key []byte, iv []byte, src string, dest string) {
 	}
 
 	enc_message := make([]byte, aes.BlockSize+len(f))
-	if _, err := io.ReadFull(rand.Reader, iv_var); err != nil {
+	if _, err := io.ReadFull(rand.Reader, iv_arr); err != nil {
 		log.Fatalln("error while reading iv")
 	}
 
 	// encrypt the message
-	stream := cipher.NewCBCEncrypter(block, iv_var)
+	stream := cipher.NewCBCEncrypter(block, iv_arr)
 	stream.CryptBlocks(enc_message[aes.BlockSize:], f)
 
 	fmt.Println("%x00", enc_message)
