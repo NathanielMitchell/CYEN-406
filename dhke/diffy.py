@@ -1,6 +1,7 @@
 from sys import argv
 import random
-from hashlib import sha256
+from hashlib import sha256, md5
+
 
 
 P = 0x00c037c37588b4329887e61c2da3324b1ba4b81a63f9748fed2d8a410c2fc21b1232f0d3bfa024276cfd88448197aae486a63bfca7b8bf7754dfb327c7201f6fd17fd7fd74158bd31ce772c9f5f8ab584548a99a759b5a2c0532162b7b6218e8f142bce2c30d7784689a483e095e701618437913a8c39c3dd0d4ca3c500b885fe3
@@ -43,9 +44,12 @@ publicKeyFile.close()
 
 K = pow(int(altKey, 16), X, mod=P)
 
-outputSymetricKey = sha256(str(K).encode("ascii")).hexdigest()
+outputSymetricKey = sha256(str(K).encode("utf-8")).hexdigest()
+
+outputIV = md5(str(K).encode("utf-8")).hexdigest()
 
 print(outputSymetricKey)
+print(outputIV)
 
 
 
