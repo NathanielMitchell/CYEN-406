@@ -4,7 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"crypto/sha1"
+    "crypto/md5"
 	"crypto/sha256"
 	"fmt"
 	"io"
@@ -20,7 +20,7 @@ func encrypt(cli_key []byte, iv []byte, src string, dest string) {
 	key := sum.Sum(nil)
 
 	// build the iv with sha1 hash
-	ivhash := sha1.New()
+	ivhash := md5.New()
 	ivhash.Write(iv)
 	iv_arr := ivhash.Sum(nil)
 
@@ -57,7 +57,7 @@ func encrypt(cli_key []byte, iv []byte, src string, dest string) {
 	stream := cipher.NewCBCEncrypter(block, iv_var)
 	stream.CryptBlocks(enc_message[aes.BlockSize:], f)
 
-	os.WriteFile(dest, enc_message, 0644)
+	fmt.Println("%x00", enc_message)
 }
 
 func decrypt(cli_key []byte, iv []byte, src string) {
@@ -68,12 +68,9 @@ func decrypt(cli_key []byte, iv []byte, src string) {
 	key := sum.Sum(nil)
 
 	// build the iv with sha1 hash
-	ivhash := sha1.New()
+	ivhash := md5.New()
 	ivhash.Write(iv)
 	iv_arr := ivhash.Sum(nil)
-
-	// make it fit
-	iv_var := iv_arr[:aes.BlockSize]
 
 	f, err := os.ReadFile(src)
 	if err != nil {
@@ -88,7 +85,7 @@ func decrypt(cli_key []byte, iv []byte, src string) {
 	decrypted_message := f[aes.BlockSize:]
 
 	// decrypt the message
-	stream := cipher.NewCBCDecrypter(block, iv_var)
+	stream := cipher.NewCBCDecrypter(block, iv_arr)
 	stream.CryptBlocks(decrypted_message, decrypted_message)
 
 	fmt.Println("Encrypted Message...")
