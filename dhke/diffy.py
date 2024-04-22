@@ -33,7 +33,7 @@ YAsHex = hex(Y)
 outputFileName = input("Please enter a file name: ")
 
 publicKeyFile = open(outputFileName, "w")
-publicKeyFile.write(YAsHex)
+publicKeyFile.write(YAsHex[2:])
 publicKeyFile.close()
 
 inputPublicKey = input("Please provide public key path: ")
