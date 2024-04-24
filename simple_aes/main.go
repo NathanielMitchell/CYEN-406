@@ -4,79 +4,80 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-    "crypto/md5"
-	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
-	"log"
 	"os"
 )
 
-func encrypt(cli_key []byte, iv []byte, src []byte) {
+// Inputs:
+// key is a hashed key sha256
+// iv is a hashed md5 value
 
-	// build the key with sha256 hash
-	sum := sha256.New()
-	sum.Write(cli_key)
-	key := sum.Sum(nil)
+func encrypt(key []byte, iv []byte, src string, dest string) {
 
-	// build the iv with sha1 hash
-	ivhash := md5.New()
-	ivhash.Write(iv)
-	iv_arr := ivhash.Sum(nil)
+	f, err := os.ReadFile(src)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// pad the end of a block
-	if len(src)%aes.BlockSize != 0 {
-		missingBytes := len(src) % aes.BlockSize
+	if len(f)%aes.BlockSize != 0 {
+		missingBytes := len(f) % aes.BlockSize
 		totalPad := aes.BlockSize - missingBytes
 		for i := 0; i < totalPad; i++ {
 			// the code that described how to do this
 			// wanted the actual pad value to be the same as 'totalPad'
-			src = append(src, byte(0x00))
+			f = append(f, byte(0x00))
 		}
 	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		log.Fatalln("error while building aes key")
+		fmt.Println("error while building aes key")
 	}
 
-	enc_message := make([]byte, aes.BlockSize+len(src))
-	if _, err := io.ReadFull(rand.Reader, iv_arr); err != nil {
-		log.Fatalln("error while reading iv")
+	enc_message := make([]byte, aes.BlockSize+len(f))
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		fmt.Println("error while reading iv")
 	}
 
 	// encrypt the message
-	stream := cipher.NewCBCEncrypter(block, iv_arr)
-	stream.CryptBlocks(enc_message[aes.BlockSize:], src)
+	stream := cipher.NewCBCEncrypter(block, iv)
+	stream.CryptBlocks(enc_message[aes.BlockSize:], f)
 
-	fmt.Println("%x00", enc_message)
+	fmt.Printf("Writing hex-encoded message to %s...\n", dest)
+	hex_enc_message := hex.EncodeToString(enc_message)
+	os.WriteFile(dest, []byte(hex_enc_message), 0640)
 }
 
-func decrypt(cli_key []byte, iv []byte, src []byte) {
+// key is a sha256 hash
+// iv is a md5 hash
+// src is a hex-encoded ciphertext
+func decrypt(key []byte, iv []byte, src string, dest string) {
 
-	// build the key with sha256 hash
-	sum := sha256.New()
-	sum.Write(cli_key)
-	key := sum.Sum(nil)
-
-	// build the iv with sha1 hash
-	ivhash := md5.New()
-	ivhash.Write(iv)
-	iv_arr := ivhash.Sum(nil)
+	fcontents, err := os.ReadFile(src)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		log.Fatalln("error while building aes key")
+		fmt.Println("error while building aes key")
 	}
 
-	decrypted_message := src[aes.BlockSize:]
+	decrypted_message, err := hex.DecodeString(string(fcontents))
+	if err != nil {
+		fmt.Println(err)
+	}
+	decrypted_message = decrypted_message[aes.BlockSize:]
 
 	// decrypt the message
-	stream := cipher.NewCBCDecrypter(block, iv_arr)
+	stream := cipher.NewCBCDecrypter(block, iv)
 	stream.CryptBlocks(decrypted_message, decrypted_message)
 
-	fmt.Println("Encrypted Message...")
-	fmt.Println(string(decrypted_message))
+	fmt.Printf("Encrypted Message written to %s...\n", dest)
+	os.WriteFile(dest, decrypted_message, 0640)
 }
 
 func main() {
@@ -84,15 +85,25 @@ func main() {
 	args := os.Args
 
 	if len(args) < 2 || len(args) > 6 {
-		fmt.Println("./simple_aes mode[encrypt:decrypt] key|'' iv|''")
+		fmt.Println("./simple_aes mode[e:d] key iv src dest")
 		return
+	}
+
+	dbarray, err := hex.DecodeString(args[2])
+	if err != nil {
+		fmt.Print("error")
+	}
+
+	harray, err := hex.DecodeString(args[3])
+	if err != nil {
+		fmt.Print("error")
 	}
 
 	switch args[1] {
 	case "e":
-		encrypt([]byte(args[2]), []byte(args[3]), []byte(args[4]))
+		encrypt(dbarray, harray, args[4], args[5])
 	case "d":
-		decrypt([]byte(args[2]), []byte(args[3]), []byte(args[4]))
+		decrypt(dbarray, harray, args[4], args[5])
 	}
 
 }
