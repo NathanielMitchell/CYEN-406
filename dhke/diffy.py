@@ -22,7 +22,7 @@ bigSaltGuy = random.getrandbits(64)
 preShaKey = username + ":" + password + ":" + str(bigSaltGuy)
 
 
-postShaKey = sha256(preShaKey.encode("ascii")).hexdigest()
+postShaKey = sha256(preShaKey.encode("utf-8")).hexdigest()
 
 X = int(postShaKey, 16)
 
