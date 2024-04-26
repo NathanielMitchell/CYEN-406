@@ -46,10 +46,15 @@ K = pow(int(altKey, 16), X, mod=P)
 
 outputSymetricKey = sha256(str(K).encode("utf-8")).hexdigest()
 
-outputIV = md5(str(K).encode("utf-8")).hexdigest()
 
-print(outputSymetricKey)
-print(outputIV)
+outputIVNormal = md5(outputSymetricKey.encode("utf-8")).hexdigest()
+
+outputIVDumbAss = md5(str(K).encode("utf-8")).hexdigest()
+
+
+print(f"Symmetric Key: {outputSymetricKey}")
+print(f"Normal IV {outputIVNormal}")
+print(f"Dumbass IV {outputIVDumbAss}")
 
 
 
