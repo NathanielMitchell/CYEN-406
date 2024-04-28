@@ -1,4 +1,4 @@
-package main
+package simple_aes
 
 import (
 	"crypto/aes"
@@ -80,7 +80,7 @@ func decrypt(key []byte, iv []byte, src string, dest string) {
 	os.WriteFile(dest, decrypted_message, 0640)
 }
 
-func main() {
+func simple_aes() {
 
 	args := os.Args
 
