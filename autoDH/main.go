@@ -2,6 +2,9 @@ package main
 
 import (
 	"os"
+
+	"../dhke"
+	"../simple_aes"
 )
 
 const (
@@ -30,9 +33,10 @@ func main() {
 	// run the program based on the mode supplied
 	switch mode {
 	case "server":
-		dhke.dhke()
+		dhke.dhke(combo)
 		server()
 	case "client":
+		message := simple_aes.simple_aes(message)
 		client(message)
 	}
 }
