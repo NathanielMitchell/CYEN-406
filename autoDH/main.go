@@ -1,10 +1,7 @@
 package main
 
 import (
-    "os"
-
-    "github.com/NathanMitchell/CYEN-406/dhke"
-    "github.com/NathanMitchell/CYEN-406/simple_aes"
+	"os"
 )
 
 const (
@@ -33,7 +30,7 @@ func main() {
 	// run the program based on the mode supplied
 	switch mode {
 	case "server":
-        dhke
+		dhke.dhke()
 		server()
 	case "client":
 		client(message)
