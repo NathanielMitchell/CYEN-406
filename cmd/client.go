@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func setup_client(message []byte, ip string) (conn net.Conn) {
+func setup_client(message []byte, ip string) {
 	//establish connection
 	connection, err := net.Dial(SERVER_TYPE, ip+":"+SERVER_PORT)
 	if err != nil {
