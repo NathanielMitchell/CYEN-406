@@ -1,4 +1,4 @@
-package dhke
+package main
 
 import (
 	"crypto/md5"

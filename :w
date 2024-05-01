@@ -22,8 +22,21 @@ func main() {
 	// username/password combo
 	// this should make it single simple string for dhke
 	combo := args[1]
+	mode := args[2]
+    ip := args[3]
 
-    server(combo)
+	X, Y := dhke.DhkeGeneratePubKey(combo)
+
+	if mode == "s" {
+		symkey, iv := server(X, Y)
+	} else if mode == "c" {
+        setup_client(ip)
+        Handshake()
+    }
+
+	go func() {
+
+	}()
 
 	for true {
 		// message to AES encrypt
@@ -31,7 +44,6 @@ func main() {
 		fmt.Print("message to send: ")
 		message, _ := reader.ReadString('\n')
 
-		message = simple_aes.Encrypt([]byte(message), resultGuy.symkey, resultGuy.iv)
-        con := processClient()
+		message = simple_aes.Encrypt([]byte(message), symkey, iv)
 	}
 }
