@@ -1,4 +1,4 @@
-package autodh
+package main
 
 import (
 	"fmt"

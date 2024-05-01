@@ -1,0 +1,4 @@
+github.com/NathanielMitchell/CYEN-406/dhke v0.0.0-20240501011903-0c1a0820f9a1 h1:/L303ihEBtmcrni2UoHmsIQrvpUzN2e8Z44XqxJRlZM=
+github.com/NathanielMitchell/CYEN-406/dhke v0.0.0-20240501011903-0c1a0820f9a1/go.mod h1:5KNvK+m4EvbNAzhcdltPRUApYSBR720llzBLgKgRz1I=
+github.com/NathanielMitchell/CYEN-406/simple_aes v0.0.0-20240501011903-0c1a0820f9a1 h1:2Y8kNWcfinMCDIJk5qxeTp4HRZcvfqkzULlrtLa1JmY=
+github.com/NathanielMitchell/CYEN-406/simple_aes v0.0.0-20240501011903-0c1a0820f9a1/go.mod h1:cjtC2wAL+QaKV5pG/EKTl62xdt5TfAFmx/tJaZb/ZWQ=

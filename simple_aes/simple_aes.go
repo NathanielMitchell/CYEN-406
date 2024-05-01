@@ -13,7 +13,7 @@ import (
 // key is a hashed key sha256
 // iv is a hashed md5 value
 
-func encrypt(key []byte, iv []byte, message []byte) *[]byte {
+func Encrypt(key []byte, iv []byte, message []byte) *[]byte {
 
 	// pad the end of a block
 	if len(message)%aes.BlockSize != 0 {
@@ -46,7 +46,7 @@ func encrypt(key []byte, iv []byte, message []byte) *[]byte {
 // key is a sha256 hash
 // iv is a md5 hash
 // src is a hex-encoded ciphertext
-func decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
+func Decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
 
 	block, err := aes.NewCipher(key)
 	if err != nil {

@@ -30,13 +30,11 @@ func dhke(combo string) (returns returnGuy) {
 	sum.Write([]byte(privateKey))
 	X := new(big.Int).SetBytes(sum.Sum(nil))
 
+	// this is where I would need a pointer to some variable to store the public key in.
 	Y := new(big.Int).Exp(g, X, primeGuy).Text(16)
 
-	// this is where I would need a pointer to some variable to store the public key in.
-
-	otherPublicKey, err := new(big.Int).SetString(whateverGetsPassedInForMe, 16)
-
 	// need to have whateverGetsPassedInForMe substituted for the pointer to the other teams public key.
+	otherPublicKey, err := new(big.Int).SetString(whateverGetsPassedInForMe, 16)
 
 	K := new(big.Int).Exp(otherPublicKey, X, primeGuy)
 
@@ -51,6 +49,5 @@ func dhke(combo string) (returns returnGuy) {
 
 	returnVal := returnGuy{outputSymmetricKey, outputIV, err}
 
-	// ****return the hex encoded semmantic key, iv, and public key here****
 	return returnVal
 }

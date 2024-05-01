@@ -1,11 +1,12 @@
-package autodh
+package main
 
 import (
 	"bufio"
 	"fmt"
 	"os"
 
-    "github.com/NathanielMitchell/CYEN-406/simple_aes"
+	"github.com/NathanielMitchell/CYEN-406/dhke"
+	"github.com/NathanielMitchell/CYEN-406/simple_aes"
 )
 
 const (
@@ -23,14 +24,19 @@ func main() {
 	combo := args[1]
 
 	// ip for other team
+    // means that we need to start dh
 	ip := args[2]
+    if len(ip) != 0 {
 
-    go server()
-
-    key, iv, err := dhke.dhke(combo)
-    if err != nil {
-        fmt.Println("error while trying to run dh key exchange")
     }
+
+	con := connectionHandler{[]byte{}, []byte{}, nil}
+	go server(con)
+
+	key, iv, err := dhke.ServerDhke(combo, con)
+	if err != nil {
+		fmt.Println("error while trying to run dh key exchange")
+	}
 
 	for true {
 		// message to AES encrypt
@@ -38,7 +44,7 @@ func main() {
 		fmt.Print("message to send: ")
 		message, _ := reader.ReadString('\n')
 
-        message = simple_aes.encrypt([]byte(message), key, iv)
-        client([]byte(message), ip)
+		message = simple_aes.Encrypt([]byte(message), key, iv)
+		client([]byte(message), ip)
 	}
 }
