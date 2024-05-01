@@ -15,8 +15,7 @@ type returnGuy struct {
 }
 
 // function takes in a string of "username:password"
-// returns two hex encoded *[]byte and a normally encoded public key
-func dhke(combo string) (returns returnGuy) {
+func Dhke(combo string, otherTeamPublicKey string) (returns returnGuy) {
 
 	primeGuy, err := new(big.Int).SetString("0x00c037c37588b4329887e61c2da3324b1ba4b81a63f9748fed2d8a410c2fc21b1232f0d3bfa024276cfd88448197aae486a63bfca7b8bf7754dfb327c7201f6fd17fd7fd74158bd31ce772c9f5f8ab584548a99a759b5a2c0532162b7b6218e8f142bce2c30d7784689a483e095e701618437913a8c39c3dd0d4ca3c500b885fe3", 16)
 
@@ -34,7 +33,7 @@ func dhke(combo string) (returns returnGuy) {
 	Y := new(big.Int).Exp(g, X, primeGuy).Text(16)
 
 	// need to have whateverGetsPassedInForMe substituted for the pointer to the other teams public key.
-	otherPublicKey, err := new(big.Int).SetString(whateverGetsPassedInForMe, 16)
+	otherPublicKey, err := new(big.Int).SetString(otherTeamPublicKey, 16)
 
 	K := new(big.Int).Exp(otherPublicKey, X, primeGuy)
 

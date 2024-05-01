@@ -19,21 +19,22 @@ func main() {
 
 	args := os.Args
 
+	// used to transfer messages
+	buffer := make(chan []byte)
+
 	// username/password combo
 	// this should make it single simple string for dhke
 	combo := args[1]
 
 	// ip for other team
-    // means that we need to start dh
+	// means that we need to start dh
 	ip := args[2]
-    if len(ip) != 0 {
-
-    }
+	if len(ip) != 0 {
+		conn := setup_client(ip, resultGuy.outui)
+	}
 
 	con := connectionHandler{[]byte{}, []byte{}, nil}
-	go server(con)
-
-	key, iv, err := dhke.ServerDhke(combo, con)
+	resultGuy := dhke.Dhke(combo, con)
 	if err != nil {
 		fmt.Println("error while trying to run dh key exchange")
 	}
@@ -45,6 +46,5 @@ func main() {
 		message, _ := reader.ReadString('\n')
 
 		message = simple_aes.Encrypt([]byte(message), key, iv)
-		client([]byte(message), ip)
 	}
 }
