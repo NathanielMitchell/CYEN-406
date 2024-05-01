@@ -1,15 +1,16 @@
-package main
+package autodh
 
 import (
 	"fmt"
 	"net"
 )
 
-func client(message []byte) {
+func client(message []byte, ip string) {
 	//establish connection
-	connection, err := net.Dial(SERVER_TYPE, SERVER_HOST+":"+SERVER_PORT)
+	connection, err := net.Dial(SERVER_TYPE, ip+":"+SERVER_PORT)
 	if err != nil {
-		panic(err)
+		fmt.Println("error while trying to connect to the remote server")
+        return
 	}
 
 	// send some data

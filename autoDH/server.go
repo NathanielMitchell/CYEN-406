@@ -1,21 +1,26 @@
-package main
+package autodh
 
 import (
 	"fmt"
 	"net"
 	"os"
+
+    "github.com/NathanielMitchell/CYEN-406/dhke"
 )
 
-func server() {
-	fmt.Println("Server Running...")
+func server(pubkey string) {
+    fmt.Printf("Server Running on SERVER_HOST:SERVER_PORT...\n", SERVER_HOST, SERVER_PORT)
+
 	server, err := net.Listen(SERVER_TYPE, SERVER_HOST+":"+SERVER_PORT)
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
 	}
-	defer server.Close()
+	// defer server.Close()
+
 	fmt.Println("Listening on " + SERVER_HOST + ":" + SERVER_PORT)
 	fmt.Println("Waiting for client...")
+
 	for {
 		connection, err := server.Accept()
 		if err != nil {
@@ -23,17 +28,20 @@ func server() {
 			os.Exit(1)
 		}
 		fmt.Println("client connected")
-		go processClient(connection)
+		go processClient(connection, pubkey)
 	}
 }
 
-func processClient(connection net.Conn) {
+// This function is used to start the diffy-helman progress
+// returns the public key of the server
+func processClient(connection net.Conn, pubkey string) (client_connection net.Conn) {
 	buffer := make([]byte, 1024)
-	mLen, err := connection.Read(buffer)
+	_, err := connection.Read(buffer)
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 	}
-	fmt.Println("Received: ", string(buffer[:mLen]))
-	_, err = connection.Write([]byte("Thanks! Got your message:" + string(buffer[:mLen])))
-	connection.Close()
+
+	_, err = connection.Write([]byte(pubkey))
+	
+    return client_connection
 }
