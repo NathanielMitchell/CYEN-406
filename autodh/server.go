@@ -10,7 +10,7 @@ import (
 )
 
 func server(X *big.Int, Y string) (symkey []byte, iv []byte, connection net.Conn) {
-	fmt.Printf("Server Running on SERVER_HOST:SERVER_PORT...\n", SERVER_HOST, SERVER_PORT)
+	fmt.Printf("Server Running on %s:%s...\n", SERVER_HOST, SERVER_PORT)
 
 	server, err := net.Listen(SERVER_TYPE, SERVER_HOST+":"+SERVER_PORT)
 	if err != nil {
