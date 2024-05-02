@@ -21,7 +21,6 @@ func main() {
 	// this should make it single simple string for dhke
 	combo := args[1]
 	mode := args[2]
-	ip := args[3]
 
 	X, Y := DhkeGeneratePubKey(combo)
 
@@ -60,6 +59,10 @@ func main() {
 		}
 
 	} else if mode == "c" {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("ip to connect to: ")
+		ip, _ := reader.ReadString('\n')
+
 		conn := Setup_client(ip)
 		symkey, iv = Handshake(Y, conn, X)
 
