@@ -9,7 +9,7 @@ import (
 
 func Setup_client(ip string) (conn net.Conn) {
 	//establish connection
-	conn, err := net.Dial(SERVER_TYPE, ip)
+	conn, err := net.Dial(SERVER_TYPE, (ip + ":9001"))
 
 	if err != nil {
 		fmt.Println("error while trying to connect to the remote server")
@@ -34,6 +34,7 @@ func Handshake(Y string, conn net.Conn, X *big.Int) (symkey []byte, iv []byte) {
 
 	// get their pubkey
 	buffer := make([]byte, 1024)
+	bufferReset := make([]byte, 1024)
 	_, err := conn.Read(buffer)
 	if err != nil {
 		fmt.Println("error reading:", err.Error())
@@ -51,6 +52,12 @@ func Handshake(Y string, conn net.Conn, X *big.Int) (symkey []byte, iv []byte) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	buffer = bufferReset
+	_, err = conn.Read(buffer)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("Server Response to Hash: %s\n", string(buffer))
 
 	return symkey, iv
 }
