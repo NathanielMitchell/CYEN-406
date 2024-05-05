@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 )
 
 const (
-	SERVER_HOST = "0.0.0.0"
+	SERVER_HOST = "127.0.0.1"
 	SERVER_PORT = "9001"
 	SERVER_TYPE = "tcp"
 )
@@ -17,7 +18,7 @@ func main() {
 
 	args := os.Args
 
-	// username/password combo
+	// username:password combo
 	// this should make it single simple string for dhke
 	combo := args[1]
 	mode := args[2]
@@ -37,7 +38,7 @@ func main() {
 			fmt.Println("Error reading:", err.Error())
 		}
 
-		for true {
+		for {
 			dec_message := Decrypt(buffer, symkey, iv)
 
 			fmt.Println(dec_message)
@@ -62,11 +63,15 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("ip to connect to: ")
 		ip, _ := reader.ReadString('\n')
+		ip = strings.TrimSpace(ip)
 
-		conn := Setup_client(ip)
+		conn = Setup_client(ip)
+
 		symkey, iv = Handshake(Y, conn, X)
 
-		for true {
+		defer conn.Close()
+
+		for {
 			// message to AES encrypt
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("message to send: ")
@@ -84,6 +89,7 @@ func main() {
 			dec_message := Decrypt(buffer, symkey, iv)
 
 			fmt.Println(dec_message)
+
 		}
 	}
 }

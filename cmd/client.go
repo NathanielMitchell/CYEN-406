@@ -9,9 +9,11 @@ import (
 
 func Setup_client(ip string) (conn net.Conn) {
 	//establish connection
-	conn, err := net.Dial(SERVER_TYPE, ip+":"+SERVER_PORT)
+	conn, err := net.Dial(SERVER_TYPE, ip)
+
 	if err != nil {
 		fmt.Println("error while trying to connect to the remote server")
+		fmt.Println(err)
 		return
 	}
 	return conn
@@ -27,8 +29,10 @@ func Send_data(message []byte, conn net.Conn) {
 }
 
 func Handshake(Y string, conn net.Conn, X *big.Int) (symkey []byte, iv []byte) {
+	// send the pubkey to the other team
 	Send_data([]byte(Y), conn)
 
+	// get their pubkey
 	buffer := make([]byte, 1024)
 	_, err := conn.Read(buffer)
 	if err != nil {
@@ -42,7 +46,11 @@ func Handshake(Y string, conn net.Conn, X *big.Int) (symkey []byte, iv []byte) {
 	newSum.Write(append(symkey, iv...))
 	hash := newSum.Sum(nil)
 
+	// send the challenge hash
 	_, err = conn.Write(hash)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	return symkey, iv
 }
