@@ -39,7 +39,9 @@ func Encrypt(key []byte, iv []byte, message []byte) *[]byte {
 	stream := cipher.NewCBCEncrypter(block, iv)
 	stream.CryptBlocks(enc_message[aes.BlockSize:], message)
 
-    return &enc_message
+	hex.Encode(enc_message, enc_message)
+
+	return &enc_message
 }
 
 // key is a sha256 hash
@@ -62,5 +64,5 @@ func Decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
 	stream := cipher.NewCBCDecrypter(block, iv)
 	stream.CryptBlocks(decrypted_message, decrypted_message)
 
-    return &decrypted_message
+	return &decrypted_message
 }
