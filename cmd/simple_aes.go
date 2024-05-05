@@ -39,7 +39,10 @@ func Encrypt(key []byte, iv []byte, message []byte) *[]byte {
 	stream := cipher.NewCBCEncrypter(block, iv)
 	stream.CryptBlocks(enc_message[aes.BlockSize:], message)
 
-    return &enc_message
+    fuckNate := make([]byte, len(enc_message))
+    hex.Encode(fuckNate, enc_message)
+
+    return &fuckNate
 }
 
 // key is a sha256 hash
