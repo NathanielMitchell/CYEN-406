@@ -39,7 +39,7 @@ func main() {
 		}
 
 		for {
-			dec_message := Decrypt(buffer, symkey, iv)
+			dec_message := Decrypt(symkey, iv, buffer)
 
 			fmt.Println(dec_message)
 
@@ -48,7 +48,7 @@ func main() {
 			fmt.Print("message to send: ")
 			message, _ := reader.ReadString('\n')
 
-			enc_message := Encrypt([]byte(message), symkey, iv)
+			enc_message := Encrypt(symkey, iv, []byte(message))
 
 			conn.Write([]byte(*enc_message))
 
@@ -77,7 +77,7 @@ func main() {
 			fmt.Print("message to send: ")
 			message, _ := reader.ReadString('\n')
 
-			enc_message := Encrypt([]byte(message), symkey, iv)
+			enc_message := Encrypt(symkey, iv, []byte(message))
 			conn.Write([]byte(*enc_message))
 
 			buffer := make([]byte, 1024)
@@ -86,7 +86,7 @@ func main() {
 				fmt.Println("Error reading:", err.Error())
 			}
 
-			dec_message := Decrypt(buffer, symkey, iv)
+			dec_message := Decrypt(symkey, iv, buffer)
 
 			fmt.Println(dec_message)
 

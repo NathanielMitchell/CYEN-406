@@ -36,8 +36,8 @@ func Server(X *big.Int, Y string) (symkey []byte, iv []byte, connection net.Conn
 // This function is used to start the diffy-helman progress
 // returns the public key of the server
 func ProcessClient(connection net.Conn, X *big.Int, Y string) (symkey []byte, iv []byte) {
-	fmt.Println(X)
 	buffer := make([]byte, 1024)
+	bufferReset := make([]byte, 1024)
 	_, err := connection.Read(buffer)
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
@@ -53,13 +53,16 @@ func ProcessClient(connection net.Conn, X *big.Int, Y string) (symkey []byte, iv
 
 	// give the other team our pubkey
 	_, err = connection.Write([]byte(Y))
-
+	if err != nil {
+		fmt.Println(err)
+	}
+	buffer = bufferReset
 	_, err = connection.Read(buffer)
 	if err != nil {
 		fmt.Println("error reading:", err.Error())
 	}
 
-	if strings.Compare(string(hash), string(buffer)) == 0 {
+	if strings.Compare(string(hash), string(buffer[:32])) == 0 {
 		connection.Write([]byte("you good blud"))
 	} else {
 		connection.Write([]byte("blud...we're cooked"))
