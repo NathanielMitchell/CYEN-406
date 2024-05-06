@@ -39,16 +39,10 @@ func Encrypt(key []byte, iv []byte, message []byte) *[]byte {
 	stream := cipher.NewCBCEncrypter(block, iv)
 	stream.CryptBlocks(enc_message[aes.BlockSize:], message)
 
-<<<<<<< HEAD
-    fuckNate := make([]byte, len(enc_message))
-    hex.Encode(fuckNate, enc_message)
+	fuckNate := make([]byte, hex.EncodedLen(len(enc_message)))
+	hex.Encode(fuckNate, enc_message)
 
-    return &fuckNate
-=======
-	hex.Encode(enc_message, enc_message)
-
-	return &enc_message
->>>>>>> 63331c16be8d92597885b0571ca6246274ad93a6
+	return &fuckNate
 }
 
 // key is a sha256 hash
@@ -61,15 +55,17 @@ func Decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
 		fmt.Println("error while building aes key")
 	}
 
-	decrypted_message, err := hex.DecodeString(string(enc_message))
+    message := make([]byte, hex.EncodedLen(len(enc_message)))
+	hex.Decode(message, enc_message)
 	if err != nil {
 		fmt.Println(err)
 	}
-	decrypted_message = decrypted_message[aes.BlockSize:]
+	message = message[aes.BlockSize:]
 
 	// decrypt the message
 	stream := cipher.NewCBCDecrypter(block, iv)
-	stream.CryptBlocks(decrypted_message, decrypted_message)
+	stream.CryptBlocks(message, message)
 
-	return &decrypted_message
+    fmt.Println(message)
+	return &message
 }

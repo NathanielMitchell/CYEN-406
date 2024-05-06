@@ -41,7 +41,7 @@ func main() {
 		for {
 			dec_message := Decrypt(symkey, iv, buffer)
 
-			fmt.Println(dec_message)
+			fmt.Println(string(*dec_message))
 
 			// message to AES encrypt
 			reader := bufio.NewReader(os.Stdin)
@@ -72,6 +72,7 @@ func main() {
 		defer conn.Close()
 
 		for {
+
 			// message to AES encrypt
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("message to send: ")
@@ -88,7 +89,7 @@ func main() {
 
 			dec_message := Decrypt(symkey, iv, buffer)
 
-			fmt.Println(dec_message)
+			fmt.Println(string(*dec_message))
 
 		}
 	}
