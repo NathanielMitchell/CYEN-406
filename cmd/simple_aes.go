@@ -37,7 +37,7 @@ func Encrypt(key []byte, iv []byte, message []byte) *[]byte {
 
 	// encrypt the message
 	stream := cipher.NewCBCEncrypter(block, iv)
-	stream.CryptBlocks(enc_message[aes.BlockSize:], message)
+	stream.CryptBlocks(enc_message, message)
 
 	fuckNate := make([]byte, hex.EncodedLen(len(enc_message)))
 	hex.Encode(fuckNate, enc_message)
@@ -60,12 +60,10 @@ func Decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
 	if err != nil {
 		fmt.Println(err)
 	}
-	message = message[aes.BlockSize:]
 
 	// decrypt the message
 	stream := cipher.NewCBCDecrypter(block, iv)
 	stream.CryptBlocks(message, message)
 
-    fmt.Println(message)
 	return &message
 }

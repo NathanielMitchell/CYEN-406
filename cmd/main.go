@@ -47,10 +47,11 @@ func main() {
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("message to send: ")
 			message, _ := reader.ReadString('\n')
+		    message = strings.TrimSpace(message)
 
 			enc_message := Encrypt(symkey, iv, []byte(message))
 
-			conn.Write([]byte(*enc_message))
+			conn.Write(*enc_message)
 
 			buffer := make([]byte, 1024)
 			_, err := conn.Read(buffer)
@@ -67,6 +68,7 @@ func main() {
 
 		conn = Setup_client(ip)
 
+		//symkey, iv = Handshake(Y, conn, X)
 		symkey, iv = Handshake(Y, conn, X)
 
 		defer conn.Close()
@@ -79,7 +81,7 @@ func main() {
 			message, _ := reader.ReadString('\n')
 
 			enc_message := Encrypt(symkey, iv, []byte(message))
-			conn.Write([]byte(*enc_message))
+			conn.Write(*enc_message)
 
 			buffer := make([]byte, 1024)
 			_, err := conn.Read(buffer)
@@ -89,7 +91,7 @@ func main() {
 
 			dec_message := Decrypt(symkey, iv, buffer)
 
-			fmt.Println(string(*dec_message))
+		    fmt.Println(string(*dec_message))
 
 		}
 	}
