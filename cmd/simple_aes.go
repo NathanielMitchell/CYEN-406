@@ -55,7 +55,9 @@ func Decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
 		fmt.Println("error while building aes key")
 	}
 
-    message := make([]byte, hex.EncodedLen(len(enc_message)))
+	//message := enc_message
+
+	message := make([]byte, hex.EncodedLen(len(enc_message)))
 	hex.Decode(message, enc_message)
 	if err != nil {
 		fmt.Println(err)
