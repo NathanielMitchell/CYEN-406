@@ -57,7 +57,6 @@ func Decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
 	message := make([]byte, hex.DecodedLen((len(enc_message))))
 	hex.Decode(message, enc_message)
 
-	fmt.Println(message)
 	if err != nil {
 		fmt.Println(err)
 	}
