@@ -32,6 +32,9 @@ func main() {
 	if mode == "s" {
 		symkey, iv, conn = Server(X, Y)
 
+		fmt.Println(symkey)
+		fmt.Println(iv)
+
 		buffer := make([]byte, 1024)
 		_, err := conn.Read(buffer)
 		if err != nil {
@@ -39,6 +42,12 @@ func main() {
 		}
 
 		for {
+			for i := 1023; i >= 0; i-- {
+				if buffer[i] != 0 {
+					buffer = buffer[:i+1]
+					break
+				}
+			}
 			dec_message := Decrypt(symkey, iv, buffer)
 
 			fmt.Println(string(*dec_message))
@@ -47,13 +56,13 @@ func main() {
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("message to send: ")
 			message, _ := reader.ReadString('\n')
-		    message = strings.TrimSpace(message)
+			message = strings.TrimSpace(message)
 
 			enc_message := Encrypt(symkey, iv, []byte(message))
 
 			conn.Write(*enc_message)
 
-			buffer := make([]byte, 1024)
+			buffer = make([]byte, 1024)
 			_, err := conn.Read(buffer)
 			if err != nil {
 				fmt.Println("Error reading:", err.Error())
@@ -71,6 +80,9 @@ func main() {
 		//symkey, iv = Handshake(Y, conn, X)
 		symkey, iv = Handshake(Y, conn, X)
 
+		fmt.Println(symkey)
+		fmt.Println(iv)
+
 		defer conn.Close()
 
 		for {
@@ -79,7 +91,8 @@ func main() {
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("message to send: ")
 			message, _ := reader.ReadString('\n')
-		    message = strings.TrimSpace(message)
+			message = strings.TrimSpace(message)
+			fmt.Println(message)
 
 			enc_message := Encrypt(symkey, iv, []byte(message))
 			conn.Write(*enc_message)
@@ -90,9 +103,16 @@ func main() {
 				fmt.Println("Error reading:", err.Error())
 			}
 
+			for i := 1023; i >= 0; i-- {
+				if buffer[i] != 0 {
+					buffer = buffer[:i+1]
+					break
+				}
+			}
+
 			dec_message := Decrypt(symkey, iv, buffer)
 
-		    fmt.Println(string(*dec_message))
+			fmt.Println(string(*dec_message))
 
 		}
 	}

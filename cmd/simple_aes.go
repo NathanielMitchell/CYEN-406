@@ -3,10 +3,8 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"io"
 )
 
 // Inputs:
@@ -30,14 +28,16 @@ func Encrypt(key []byte, iv []byte, message []byte) *[]byte {
 		fmt.Println("error while building aes key")
 	}
 
-	enc_message := make([]byte, aes.BlockSize+len(message))
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		fmt.Println("error while reading iv")
-	}
+	enc_message := make([]byte, len(message))
+	// if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+	// 	fmt.Println("error while reading iv")
+	// }
 
 	// encrypt the message
 	stream := cipher.NewCBCEncrypter(block, iv)
 	stream.CryptBlocks(enc_message, message)
+
+	fmt.Println(enc_message)
 
 	fuckNate := make([]byte, hex.EncodedLen(len(enc_message)))
 	hex.Encode(fuckNate, enc_message)
@@ -56,9 +56,10 @@ func Decrypt(key []byte, iv []byte, enc_message []byte) *[]byte {
 	}
 
 	//message := enc_message
-
-	message := make([]byte, hex.EncodedLen(len(enc_message)))
+	message := make([]byte, hex.DecodedLen((len(enc_message))))
 	hex.Decode(message, enc_message)
+
+	fmt.Println(message)
 	if err != nil {
 		fmt.Println(err)
 	}
