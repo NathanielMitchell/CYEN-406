@@ -32,9 +32,6 @@ func main() {
 	if mode == "s" {
 		symkey, iv, conn = Server(X, Y)
 
-		fmt.Println(symkey)
-		fmt.Println(iv)
-
 		buffer := make([]byte, 1024)
 		_, err := conn.Read(buffer)
 		if err != nil {
@@ -80,9 +77,6 @@ func main() {
 		//symkey, iv = Handshake(Y, conn, X)
 		symkey, iv = Handshake(Y, conn, X)
 
-		fmt.Println(symkey)
-		fmt.Println(iv)
-
 		defer conn.Close()
 
 		for {
@@ -92,7 +86,6 @@ func main() {
 			fmt.Print("message to send: ")
 			message, _ := reader.ReadString('\n')
 			message = strings.TrimSpace(message)
-			fmt.Println(message)
 
 			enc_message := Encrypt(symkey, iv, []byte(message))
 			conn.Write(*enc_message)

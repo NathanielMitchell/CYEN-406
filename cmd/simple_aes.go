@@ -37,8 +37,6 @@ func Encrypt(key []byte, iv []byte, message []byte) *[]byte {
 	stream := cipher.NewCBCEncrypter(block, iv)
 	stream.CryptBlocks(enc_message, message)
 
-	fmt.Println(enc_message)
-
 	fuckNate := make([]byte, hex.EncodedLen(len(enc_message)))
 	hex.Encode(fuckNate, enc_message)
 
