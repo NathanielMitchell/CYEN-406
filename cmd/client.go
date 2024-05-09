@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"net"
@@ -31,6 +32,7 @@ func Send_data(message []byte, conn net.Conn) {
 func Handshake(Y string, conn net.Conn, X *big.Int) (symkey []byte, iv []byte) {
 	// send the pubkey to the other team
 	Send_data([]byte(Y), conn)
+	fmt.Printf("Our Public Key: %s\n", Y)
 
 	// get their pubkey
 	buffer := make([]byte, 1024)
@@ -39,13 +41,18 @@ func Handshake(Y string, conn net.Conn, X *big.Int) (symkey []byte, iv []byte) {
 	if err != nil {
 		fmt.Println("error reading:", err.Error())
 	}
+	fmt.Printf("this is what they Sent: %s\n", buffer)
 
 	symkey, iv = DhkeGenerateSym(X, string(buffer))
 
+	fmt.Printf("Sym Key: %s\n", hex.EncodeToString(symkey))
+	fmt.Printf("iv: %s\n", hex.EncodeToString(iv))
 	newSum := sha256.New()
 	// need to have it be utf-8 encoded for it to be compatible.
 	newSum.Write(append(symkey, iv...))
 	hash := newSum.Sum(nil)
+
+	fmt.Printf("Hash of Key+IV: %s\n", hex.EncodeToString(hash))
 
 	// send the challenge hash
 	_, err = conn.Write(hash)

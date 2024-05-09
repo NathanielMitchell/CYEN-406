@@ -43,7 +43,7 @@ func DhkeGenerateSym(X *big.Int, otherTeamPublicKey string) (symkey []byte, iv [
 	outputSymmetricKey := newSum.Sum(nil)
 
 	newNewSum := md5.New()
-	newSum.Write([]byte(K.Text(10)))
+	newNewSum.Write([]byte(K.Text(10)))
 	outputIV := newNewSum.Sum(nil)
 
 	return outputSymmetricKey, outputIV
